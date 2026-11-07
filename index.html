@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hogwarts Spatial Grimoire - DSA Tracker</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .font-title { font-family: 'Cinzel', serif; }
+        .font-body { font-family: 'Outfit', sans-serif; }
+
+        /* Spatial Light Theme with Vibrant Soft Gradients */
+        body {
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(244, 114, 182, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(129, 140, 248, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(251, 191, 36, 0.1) 0%, #f1f5f9 100%);
+            color: #1e293b;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Spatial Light Glassmorphism */
+        .glass-spatial {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px -15px rgba(148, 163, 184, 0.3);
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(203, 213, 225, 0.8);
+        }
+        .glass-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Curtain Opening Animation Logic */
+        #curtain-container {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            pointer-events: auto;
+            transition: visibility 0.8s ease;
+        }
+
+        .curtain-panel {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+            z-index: 2;
+        }
+
+        #curtain-left { left: 0; transform-origin: left; }
+        #curtain-right { right: 0; transform-origin: right; }
+
+        .open-left { transform: translateX(-100%); }
+        .open-right { transform: translateX(100%); }
+
+        /* Curtain Center Content (Entrance Card) */
+        #entrance-content {
+            position: relative;
+            z-index: 10;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        /* Phoenix Glow */
+        @keyframes phoenixPulse {
+            0%, 100% { filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.7)); }
+            50% { filter: drop-shadow(0 0 30px rgba(239, 68, 68, 0.9)); }
+        }
+        .phoenix-glow { animation: phoenixPulse 3s ease-in-out infinite; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="font-body selection:bg-indigo-500 selection:text-white">
+
+    <!-- ==================== SPATIAL CURTAIN & ENTRANCE SCREEN ==================== -->
+    <div id="curtain-container" class="items-center justify-center">
+        <!-- Left Curtain -->
+        <div id="curtain-left" class="curtain-panel"></div>
+        <!-- Right Curtain -->
+        <div id="curtain-right" class="curtain-panel"></div>
+
+        <!-- Center Minimalist Glass Entrance Card -->
+        <div id="entrance-content" class="glass-spatial max-w-md w-full mx-4 p-8 md:p-10 rounded-3xl text-center relative border border-white/60 shadow-2xl">
+            <!-- Decorative Gradient Orb -->
+            <div class="absolute -top-12 -left-12 w-32 h-32 bg-indigo-400/30 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-amber-400/30 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="text-5xl md:text-6xl mb-4 phoenix-glow inline-block select-none">
+                🔥🦅🪄
+            </div>
+
+            <h1 class="text-2xl md:text-3xl font-bold font-title text-indigo-950 mb-2">
+                Hogwarts Grimoire
+            </h1>
+            <p class="text-xs font-semibold text-indigo-600 uppercase tracking-widest mb-6">
+                Spatial Light Edition — Kunal Kushwaha's Vaults
+            </p>
+
+            <p class="text-sm text-slate-600 mb-8 leading-relaxed font-light">
+                Wield your light, part the spatial veils, and unlock the master algorithms of wizardkind.
+            </p>
+
+            <!-- Enter Button -->
+            <button id="enter-btn" class="group relative inline-flex items-center gap-3 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-medium text-sm tracking-wide hover:from-indigo-500 hover:to-violet-500 transition-all duration-300 shadow-xl shadow-indigo-500/30 active:scale-95">
+                <span>Part the Curtains</span>
+                <span class="transform group-hover:translate-x-1.5 transition-transform">✨</span>
+            </button>
+        </div>
+    </div>
+
+
+    <!-- ==================== MAIN SPATIAL DASHBOARD (Hidden behind curtains) ==================== -->
+    <div id="tracker-app" class="opacity-0 transition-opacity duration-1000">
+        
+        <!-- Spatial Header -->
+        <header class="glass-header sticky top-0 z-40 shadow-sm">
+            <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="text-center md:text-left flex items-center gap-3">
+                    <span class="text-2xl">🪄✨</span>
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold font-title text-indigo-950 tracking-wide">
+                            Hogwarts Spatial Grimoire
+                        </h1>
+                        <p class="text-xs text-slate-500 font-medium">Kunal Kushwaha's DSA Vaults</p>
+                    </div>
+                </div>
+                
+                <!-- Progress Box -->
+                <div class="w-full md:w-80 glass-spatial p-3.5 rounded-2xl">
+                    <div class="flex justify-between text-xs mb-1.5 font-semibold text-slate-700">
+                        <span>Spell Mastery Progress</span>
+                        <span id="progress-percentage" class="text-indigo-600 font-bold">0%</span>
+                    </div>
+                    <div class="bg-slate-200 rounded-full h-2 overflow-hidden">
+                        <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 to-violet-600 h-full transition-all duration-500 shadow-sm" style="width: 0%"></div>
+                    </div>
+                    <div class="text-[11px] text-slate-500 mt-1.5 text-right font-medium">
+                        <span id="solved-count" class="text-indigo-950 font-bold">0</span> / <span id="total-count">0</span> Spells Mastered
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <main class="max-w-5xl mx-auto px-4 py-8">
+            
+            <!-- Search & Toolbar -->
+            <div class="mb-8 flex flex-col sm:flex-row gap-3 items-center justify-between">
+                <div class="relative w-full sm:w-96">
+                    <input type="text" id="search-input" placeholder="Search spells, vaults or difficulty..." 
+                        class="glass-input w-full text-slate-800 text-sm rounded-xl px-4 py-3 focus:outline-none transition placeholder:text-slate-400 shadow-sm font-medium">
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <button id="reset-btn" class="glass-spatial text-xs font-semibold text-slate-600 hover:text-rose-600 hover:border-rose-300 px-4 py-3 rounded-xl transition shadow-sm">
+                        ✨ Cast Obliviate (Reset)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Folders Container -->
+            <div id="tracker-container" class="space-y-4">
+                <!-- Dynamically populated -->
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== SCRIPT ==================== -->
+    <script>
+        // Curtain Opening Transition Logic
+        const curtainLeft = document.getElementById('curtain-left');
+        const curtainRight = document.getElementById('curtain-right');
+        const entranceContent = document.getElementById('entrance-content');
+        const curtainContainer = document.getElementById('curtain-container');
+        const trackerApp = document.getElementById('tracker-app');
+        const enterBtn = document.getElementById('enter-btn');
+
+        enterBtn.addEventListener('click', () => {
+            // Fade out entrance card
+            entranceContent.style.opacity = '0';
+            entranceContent.style.transform = 'scale(0.95)';
+
+            // Slide curtains apart
+            setTimeout(() => {
+                curtainLeft.classList.add('open-left');
+                curtainRight.classList.add('open-right');
+            }, 200);
+
+            // Remove curtain container and reveal dashboard
+            setTimeout(() => {
+                curtainContainer.style.visibility = 'hidden';
+                trackerApp.classList.remove('opacity-0');
+            }, 1000);
+        });
+
+        // Question Database
+        const dsaData = [
+          {
+            folderName: "01-flow-of-programs",
+            title: "Flow of Programs",
+            questions: [
+              { id: "flow_1", title: "Leap Year Check", difficulty: "Easy", link: "https://leetcode.com/problems/leap-year-ii" },
+              { id: "flow_2", title: "Sum of Two Numbers", difficulty: "Easy", link: "https://leetcode.com/problems/add-two-numbers" },
+              { id: "flow_3", title: "Multiplication Table", difficulty: "Easy", link: "https://leetcode.com/problems/multiply-strings" },
+              { id: "flow_4", title: " Find Greatest Common Divisor of Array", difficulty: "Easy", link: "https://leetcode.com/problems/find-greatest-common-divisor-of-array/description/" },
+              { id: "flow_5", title: "Keep taking numbers as inputs till the user enters 'x', after that print sum", difficulty: "Easy", link: "https://leetcode.com/problems/add-digits" }
+            ]
+          },
+          {
+            folderName: "02-first-java",
+            title: "First Java Program",
+            questions: [
+              { id: "java_1", title: "Even or Odd Number", difficulty: "Easy", link: "https://leetcode.com/problems/valid-palindrome" },
+              { id: "java_2", title: "Greeting Message Builder", difficulty: "Easy", link: "https://leetcode.com/problems/to-lower-case" },
+              { id: "java_3", title: "Simple Interest Calculation", difficulty: "Easy", link: "https://leetcode.com/problems/plus-one" },
+              { id: "java_4", title: "Input currency in rupees and output in USD", difficulty: "Easy", link: "https://leetcode.com/problems/excel-sheet-column-title" },
+              { id: "java_5", title: "Calculate Fibonacci Series up to n numbers", difficulty: "Easy", link: "https://leetcode.com/problems/fibonacci-number" },
+              { id: "java_6", title: "Input a number and check if it is Armstrong number or not", difficulty: "Medium", link: "https://leetcode.com/problems/armstrong-number" }
+            ]
+          },
+          {
+            folderName: "03-conditionals-loops",
+            title: "Conditionals & Loops",
+            questions: [
+              { id: "cond_1", title: "Subtract the Product and Sum of Digits of an Integer", difficulty: "Easy", link: "https://leetcode.com/problems/subtract-the-product-and-sum-of-digits-of-an-integer/" },
+              { id: "cond_2", title: "Find All Numbers Disappeared in an Array", difficulty: "Easy", link: "https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/" },
+              { id: "cond_3", title: "Palindrome Number", difficulty: "Easy", link: "https://leetcode.com/problems/palindrome-number/" },
+              { id: "cond_4", title: "Factorial Program in Java", difficulty: "Easy", link: "https://leetcode.com/problems/factorial-trailing-zeroes/" },
+              { id: "cond_5", title: "Calculate Average Marks", difficulty: "Easy", link: "https://leetcode.com/problems/running-sum-of-1d-array/" },
+              { id: "cond_6", title: "Calculate Commission Percentage", difficulty: "Easy", link: "https://leetcode.com/problems/percentage-of-letter-in-string/" },
+              { id: "cond_7", title: "Power In Java (Pow(x, n))", difficulty: "Medium", link: "https://leetcode.com/problems/powx-n/" },
+              { id: "cond_8", title: "Perfect Number", difficulty: "Easy", link: "https://leetcode.com/problems/perfect-number/" }
+            ]
+          },
+          {
+            folderName: "04-functions",
+            title: "Functions (Methods)",
+            questions: [
+              { id: "func_1", title: "Maximum and Minimum of Three Numbers", difficulty: "Easy", link: "https://leetcode.com/problems/maximum-product-of-three-numbers/" },
+              { id: "func_2", title: "Even or Odd Function", difficulty: "Easy", link: "https://leetcode.com/problems/valid-palindrome/" },
+              { id: "func_3", title: "Vote Eligibility Function", difficulty: "Easy", link: "https://leetcode.com/problems/age-limit/" },
+              { id: "func_4", title: "Sum of Two Numbers Function", difficulty: "Easy", link: "https://leetcode.com/problems/add-two-numbers/" },
+              { id: "func_5", title: "Prime Number Checker Function", difficulty: "Medium", link: "https://leetcode.com/problems/count-primes/" },
+              { id: "func_6", title: "Pythagorean Triplet in Java", difficulty: "Medium", link: "https://leetcode.com/problems/valid-triangle-number/" }
+            ]
+          },
+          {
+            folderName: "05-arrays",
+            title: "Arrays & ArrayList",
+            questions: [
+              { id: "arr_1", title: "Build Array from Permutation", difficulty: "Easy", link: "https://leetcode.com/problems/build-array-from-permutation/" },
+              { id: "arr_2", title: "Concatenation of Array", difficulty: "Easy", link: "https://leetcode.com/problems/concatenation-of-array/" },
+              { id: "arr_3", title: "Running Sum of 1d Array", difficulty: "Easy", link: "https://leetcode.com/problems/running-sum-of-1d-array/" },
+              { id: "arr_4", title: "Richest Customer Wealth", difficulty: "Easy", link: "https://leetcode.com/problems/richest-customer-wealth/" },
+              { id: "arr_5", title: "Shuffle the Array", difficulty: "Easy", link: "https://leetcode.com/problems/shuffle-the-array/" },
+              { id: "arr_6", title: "Kids With the Greatest Number of Candies", difficulty: "Easy", link: "https://leetcode.com/problems/kids-with-the-greatest-number-of-candies/" },
+              { id: "arr_7", title: "Number of Good Pairs", difficulty: "Easy", link: "https://leetcode.com/problems/number-of-good-pairs/" },
+              { id: "arr_8", title: "Smaller Numbers Than Current", difficulty: "Easy", link: "https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/" },
+              { id: "arr_9", title: "Create Target Array in the Given Order", difficulty: "Easy", link: "https://leetcode.com/problems/create-target-array-in-the-given-order/" },
+              { id: "arr_10", title: "Check if the Sentence Is Pangram", difficulty: "Easy", link: "https://leetcode.com/problems/check-if-the-sentence-is-pangram/" },
+              { id: "arr_11", title: "Count Items Matching a Rule", difficulty: "Easy", link: "https://leetcode.com/problems/count-items-matching-a-rule/" },
+              { id: "arr_12", title: "Find the Highest Altitude", difficulty: "Easy", link: "https://leetcode.com/problems/find-the-highest-altitude/" },
+              { id: "arr_13", title: "Flipping an Image", difficulty: "Easy", link: "https://leetcode.com/problems/flipping-an-image/" },
+              { id: "arr_14", title: "Diagonal Traverse", difficulty: "Medium", link: "https://leetcode.com/problems/diagonal-traverse/" },
+              { id: "arr_15", title: "Spiral Matrix", difficulty: "Medium", link: "https://leetcode.com/problems/spiral-matrix/" },
+              { id: "arr_16", title: "Maximum Subarray", difficulty: "Medium", link: "https://leetcode.com/problems/maximum-subarray/" },
+              { id: "arr_17", title: "Product of Array Except Self", difficulty: "Medium", link: "https://leetcode.com/problems/product-of-array-except-self/" },
+              { id: "arr_18", title: "First Missing Positive", difficulty: "Hard", link: "https://leetcode.com/problems/first-missing-positive/" }
+            ]
+          },
+          {
+            folderName: "06-searching",
+            title: "Searching (Linear & Binary Search)",
+            questions: [
+              { id: "srch_1", title: "Sqrt(x)", difficulty: "Easy", link: "https://leetcode.com/problems/sqrtx/" },
+              { id: "srch_2", title: "Guess Number Higher or Lower", difficulty: "Easy", link: "https://leetcode.com/problems/guess-number-higher-or-lower/" },
+              { id: "srch_3", title: "First Bad Version", difficulty: "Easy", link: "https://leetcode.com/problems/first-bad-version/" },
+              { id: "srch_4", title: "Peak Index in a Mountain Array", difficulty: "Medium", link: "https://leetcode.com/problems/peak-index-in-a-mountain-array/" },
+              { id: "srch_5", title: "Find First and Last Position of Element in Sorted Array", difficulty: "Medium", link: "https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/" },
+              { id: "srch_6", title: "Search in Rotated Sorted Array", difficulty: "Medium", link: "https://leetcode.com/problems/search-in-rotated-sorted-array/" },
+              { id: "srch_7", title: "Split Array Largest Sum", difficulty: "Hard", link: "https://leetcode.com/problems/split-array-largest-sum/" },
+              { id: "srch_8", title: "Find Smallest Letter Greater Than Target", difficulty: "Easy", link: "https://leetcode.com/problems/find-smallest-letter-greater-than-target/" },
+              { id: "srch_9", title: "Infinite Array Search Element", difficulty: "Medium", link: "https://leetcode.com/problems/find-in-mountain-array/" }
+            ]
+          },
+          {
+            folderName: "07-sorting",
+            title: "Sorting Algorithms",
+            questions: [
+              { id: "sort_1", title: "Missing Number", difficulty: "Easy", link: "https://leetcode.com/problems/missing-number/" },
+              { id: "sort_2", title: "Find All Numbers Disappeared in an Array", difficulty: "Easy", link: "https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/" },
+              { id: "sort_3", title: "Third Maximum Number", difficulty: "Easy", link: "https://leetcode.com/problems/third-maximum-number/" },
+              { id: "sort_4", title: "Merge Sorted Array", difficulty: "Easy", link: "https://leetcode.com/problems/merge-sorted-array/" },
+              { id: "sort_5", title: "Contains Duplicate", difficulty: "Easy", link: "https://leetcode.com/problems/contains-duplicate/" },
+              { id: "sort_6", title: "Find All Duplicates in an Array", difficulty: "Medium", link: "https://leetcode.com/problems/find-all-duplicates-in-an-array/" },
+              { id: "sort_7", title: "Set Mismatch", difficulty: "Easy", link: "https://leetcode.com/problems/set-mismatch/" },
+              { id: "sort_8", title: "Kth Largest Element in an Array", difficulty: "Medium", link: "https://leetcode.com/problems/kth-largest-element-in-an-array/" },
+              { id: "sort_9", title: "Largest Number", difficulty: "Medium", link: "https://leetcode.com/problems/largest-number/" }
+            ]
+          },
+          {
+            folderName: "08-strings",
+            title: "Strings & StringBuilder",
+            questions: [
+              { id: "str_1", title: "Defanging an IP Address", difficulty: "Easy", link: "https://leetcode.com/problems/defanging-an-ip-address/" },
+              { id: "str_2", title: "Goal Parser Interpretation", difficulty: "Easy", link: "https://leetcode.com/problems/goal-parser-interpretation/" },
+              { id: "str_3", title: "Valid Palindrome", difficulty: "Easy", link: "https://leetcode.com/problems/valid-palindrome/" },
+              { id: "str_4", title: "Longest Common Prefix", difficulty: "Easy", link: "https://leetcode.com/problems/longest-common-prefix/" },
+              { id: "str_5", title: "Reverse Words in a String", difficulty: "Medium", link: "https://leetcode.com/problems/reverse-words-in-a-string/" },
+              { id: "str_6", title: "Find the Index of the First Occurrence in a String", difficulty: "Easy", link: "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/" },
+              { id: "str_7", title: "Determine if String Halves Are Alike", difficulty: "Easy", link: "https://leetcode.com/problems/determine-if-string-halves-are-alike/" },
+              { id: "str_8", title: "To Lower Case", difficulty: "Easy", link: "https://leetcode.com/problems/to-lower-case/" }
+            ]
+          },
+          {
+            folderName: "09-math",
+            title: "Math for DSA / Bit Manipulation",
+            questions: [
+              { id: "math_1", title: "Number of 1 Bits", difficulty: "Easy", link: "https://leetcode.com/problems/number-of-1-bits/" },
+              { id: "math_2", title: "Single Number", difficulty: "Easy", link: "https://leetcode.com/problems/single-number/" },
+              { id: "math_3", title: "Power of Two", difficulty: "Easy", link: "https://leetcode.com/problems/power-of-two/" },
+              { id: "math_4", title: "Palindrome Number", difficulty: "Easy", link: "https://leetcode.com/problems/palindrome-number/" },
+              { id: "math_5", title: "Excel Sheet Column Number", difficulty: "Easy", link: "https://leetcode.com/problems/excel-sheet-column-number/" },
+              { id: "math_6", title: "Prime Numbers up to N (Sieve of Eratosthenes)", difficulty: "Medium", link: "https://leetcode.com/problems/count-primes/" },
+              { id: "math_7", title: "Find Greatest Common Divisor (GCD/HCF & LCM)", difficulty: "Easy", link: "https://leetcode.com/problems/find-greatest-common-divisor-of-array/" }
+            ]
+          },
+          {
+            folderName: "10-recursion",
+            title: "Recursion & Backtracking",
+            questions: [
+              { id: "rec_1", title: "Fibonacci Number", difficulty: "Easy", link: "https://leetcode.com/problems/fibonacci-number/" },
+              { id: "rec_2", title: "Pow(x, n)", difficulty: "Medium", link: "https://leetcode.com/problems/powx-n/" },
+              { id: "rec_3", title: "Subsets", difficulty: "Medium", link: "https://leetcode.com/problems/subsets/" },
+              { id: "rec_4", title: "Permutations", difficulty: "Medium", link: "https://leetcode.com/problems/permutations/" },
+              { id: "rec_5", title: "N-Queens", difficulty: "Hard", link: "https://leetcode.com/problems/n-queens/" },
+              { id: "rec_6", title: "Sudoku Solver", difficulty: "Hard", link: "https://leetcode.com/problems/sudoku-solver/" },
+              { id: "rec_7", title: "Letter Combinations of a Phone Number", difficulty: "Medium", link: "https://leetcode.com/problems/letter-combinations-of-a-phone-number/" },
+              { id: "rec_8", title: "Combination Sum", difficulty: "Medium", link: "https://leetcode.com/problems/combination-sum/" }
+            ]
+          },
+          {
+            folderName: "11-linked-list",
+            title: "Linked Lists",
+            questions: [
+              { id: "ll_1", title: "Convert Binary Number in a Linked List to Integer", difficulty: "Easy", link: "https://leetcode.com/problems/convert-binary-number-in-a-linked-list-to-integer/" },
+              { id: "ll_2", title: "Reverse Linked List", difficulty: "Easy", link: "https://leetcode.com/problems/reverse-linked-list/" },
+              { id: "ll_3", title: "Middle of the Linked List", difficulty: "Easy", link: "https://leetcode.com/problems/middle-of-the-linked-list/" },
+              { id: "ll_4", title: "Merge Two Sorted Lists", difficulty: "Easy", link: "https://leetcode.com/problems/merge-two-sorted-lists/" },
+              { id: "ll_5", title: "Linked List Cycle", difficulty: "Easy", link: "https://leetcode.com/problems/linked-list-cycle/" },
+              { id: "ll_6", title: "Add Two Numbers", difficulty: "Medium", link: "https://leetcode.com/problems/add-two-numbers/" },
+              { id: "ll_7", title: "Reorder List", difficulty: "Medium", link: "https://leetcode.com/problems/reorder-list/" },
+              { id: "ll_8", title: "Remove Nth Node From End of List", difficulty: "Medium", link: "https://leetcode.com/problems/remove-nth-node-from-end-of-list/" },
+              { id: "ll_9", title: "Sort List", difficulty: "Medium", link: "https://leetcode.com/problems/sort-list/" },
+              { id: "ll_10", title: "Reverse Nodes in k-Group", difficulty: "Hard", link: "https://leetcode.com/problems/reverse-nodes-in-k-group/" },
+              { id: "ll_11", title: "Merge k Sorted Lists", difficulty: "Hard", link: "https://leetcode.com/problems/merge-k-sorted-lists/" },
+              { id: "ll_12", title: "Palindrome Linked List", difficulty: "Easy", link: "https://leetcode.com/problems/palindrome-linked-list/" }
+            ]
+          },
+          {
+            folderName: "12-stacks-queues",
+            title: "Stacks & Queues",
+            questions: [
+              { id: "stk_1", title: "Valid Parentheses", difficulty: "Easy", link: "https://leetcode.com/problems/valid-parentheses/" },
+              { id: "stk_2", title: "Implement Queue using Stacks", difficulty: "Easy", link: "https://leetcode.com/problems/implement-queue-using-stacks/" },
+              { id: "stk_3", title: "Min Stack", difficulty: "Medium", link: "https://leetcode.com/problems/min-stack/" },
+              { id: "stk_4", title: "Next Greater Element I", difficulty: "Easy", link: "https://leetcode.com/problems/next-greater-element-i/" },
+              { id: "stk_5", title: "Evaluate Reverse Polish Notation", difficulty: "Medium", link: "https://leetcode.com/problems/evaluate-reverse-polish-notation/" },
+              { id: "stk_6", title: "Largest Rectangle in Histogram", difficulty: "Hard", link: "https://leetcode.com/problems/largest-rectangle-in-histogram/" },
+              { id: "stk_7", title: "Implement Stack using Queues", difficulty: "Easy", link: "https://leetcode.com/problems/implement-stack-using-queues/" }
+            ]
+          },
+          {
+            folderName: "13-trees",
+            title: "Binary Trees & BST",
+            questions: [
+              { id: "tree_1", title: "Binary Tree Inorder Traversal", difficulty: "Easy", link: "https://leetcode.com/problems/binary-tree-inorder-traversal/" },
+              { id: "tree_2", title: "Same Tree", difficulty: "Easy", link: "https://leetcode.com/problems/same-tree/" },
+              { id: "tree_3", title: "Symmetric Tree", difficulty: "Easy", link: "https://leetcode.com/problems/symmetric-tree/" },
+              { id: "tree_4", title: "Maximum Depth of Binary Tree", difficulty: "Easy", link: "https://leetcode.com/problems/maximum-depth-of-binary-tree/" },
+              { id: "tree_5", title: "Invert Binary Tree", difficulty: "Easy", link: "https://leetcode.com/problems/invert-binary-tree/" },
+              { id: "tree_6", title: "Validate Binary Search Tree", difficulty: "Medium", link: "https://leetcode.com/problems/validate-binary-search-tree/" },
+              { id: "tree_7", title: "Binary Tree Level Order Traversal", difficulty: "Medium", link: "https://leetcode.com/problems/binary-tree-level-order-traversal/" },
+              { id: "tree_8", title: "Path Sum II", difficulty: "Medium", link: "https://leetcode.com/problems/path-sum-ii/" },
+              { id: "tree_9", title: "Binary Tree Maximum Path Sum", difficulty: "Hard", link: "https://leetcode.com/problems/binary-tree-maximum-path-sum/" },
+              { id: "tree_10", title: "Serialize and Deserialize Binary Tree", difficulty: "Hard", link: "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/" },
+              { id: "tree_11", title: "Binary Tree Preorder Traversal", difficulty: "Easy", link: "https://leetcode.com/problems/binary-tree-preorder-traversal/" },
+              { id: "tree_12", title: "Binary Tree Postorder Traversal", difficulty: "Easy", link: "https://leetcode.com/problems/binary-tree-postorder-traversal/" }
+            ]
+          },
+          {
+            folderName: "14-heaps",
+            title: "Heaps / Priority Queue",
+            questions: [
+              { id: "heap_1", title: "Kth Largest Element in an Array", difficulty: "Medium", link: "https://leetcode.com/problems/kth-largest-element-in-an-array/" },
+              { id: "heap_2", title: "Last Stone Weight", difficulty: "Easy", link: "https://leetcode.com/problems/last-stone-weight/" },
+              { id: "heap_3", title: "Top K Frequent Elements", difficulty: "Medium", link: "https://leetcode.com/problems/top-k-frequent-elements/" },
+              { id: "heap_4", title: "Find Median from Data Stream", difficulty: "Hard", link: "https://leetcode.com/problems/find-median-from-data-stream/" },
+              { id: "heap_5", title: "K Closest Points to Origin", difficulty: "Medium", link: "https://leetcode.com/problems/k-closest-points-to-origin/" }
+            ]
+          },
+          {
+            folderName: "15-graphs",
+            title: "Graphs",
+            questions: [
+              { id: "graph_1", title: "Find if Path Exists in Graph", difficulty: "Easy", link: "https://leetcode.com/problems/find-if-path-exists-in-graph/" },
+              { id: "graph_2", title: "Course Schedule", difficulty: "Medium", link: "https://leetcode.com/problems/course-schedule/" },
+              { id: "graph_3", title: "Number of Islands", difficulty: "Medium", link: "https://leetcode.com/problems/number-of-islands/" },
+              { id: "graph_4", title: "Rotting Oranges", difficulty: "Medium", link: "https://leetcode.com/problems/rotting-oranges/" },
+              { id: "graph_5", title: "Word Ladder", difficulty: "Hard", link: "https://leetcode.com/problems/word-ladder/" },
+              { id: "graph_6", title: "Clone Graph", difficulty: "Medium", link: "https://leetcode.com/problems/clone-graph/" },
+              { id: "graph_7", title: "Course Schedule II", difficulty: "Medium", link: "https://leetcode.com/problems/course-schedule-ii/" }
+            ]
+          }
+        ];
+
+        let solvedQuestions = JSON.parse(localStorage.getItem('hogwarts_spatial_solved')) || [];
+
+        const container = document.getElementById('tracker-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercentage = document.getElementById('progress-percentage');
+        const solvedCountSpan = document.getElementById('solved-count');
+        const totalCountSpan = document.getElementById('total-count');
+        const searchInput = document.getElementById('search-input');
+        const resetBtn = document.getElementById('reset-btn');
+
+        function getTotalQuestionsCount() {
+            let count = 0;
+            dsaData.forEach(folder => count += folder.questions.length);
+            return count;
+        }
+
+        function updateStats() {
+            const total = getTotalQuestionsCount();
+            const solved = solvedQuestions.length;
+            const percentage = total > 0 ? Math.round((solved / total) * 100) : 0;
+
+            progressBar.style.width = `${percentage}%`;
+            progressPercentage.innerText = `${percentage}%`;
+            solvedCountSpan.innerText = solved;
+            totalCountSpan.innerText = total;
+        }
+
+        function getDifficultyBadgeClass(difficulty) {
+            switch (difficulty) {
+                case 'Easy': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                case 'Medium': return 'bg-amber-50 text-amber-700 border-amber-200';
+                case 'Hard': return 'bg-rose-50 text-rose-700 border-rose-200';
+                default: return 'bg-slate-100 text-slate-700 border-slate-200';
+            }
+        }
+
+        function renderTracker(filterText = '') {
+            container.innerHTML = '';
+            const query = filterText.toLowerCase().trim();
+
+            let hasResults = false;
+
+            dsaData.forEach((folder) => {
+                const filteredQuestions = folder.questions.filter(q => 
+                    q.title.toLowerCase().includes(query) || 
+                    folder.title.toLowerCase().includes(query) ||
+                    q.difficulty.toLowerCase().includes(query)
+                );
+
+                if (filteredQuestions.length === 0) return;
+                hasResults = true;
+
+                const folderCard = document.createElement('div');
+                folderCard.className = 'glass-spatial rounded-2xl overflow-hidden transition duration-300';
+
+                const headerBtn = document.createElement('div');
+                headerBtn.className = 'w-full px-5 py-4 bg-white/60 hover:bg-white/90 flex items-center justify-between cursor-pointer transition select-none';
+                
+                const folderSolved = folder.questions.filter(q => solvedQuestions.includes(q.id)).length;
+                
+                headerBtn.innerHTML = `
+                    <div class="flex items-center gap-3.5">
+                        <span class="text-indigo-600 text-base">📜</span>
+                        <div>
+                            <h2 class="text-base font-bold font-title text-indigo-950">${folder.title}</h2>
+                            <span class="text-[11px] text-slate-400 font-mono">Vault: ${folder.folderName}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
+                            ${folderSolved} / ${folder.questions.length} Mastered
+                        </span>
+                        <span class="text-slate-400 text-xs transform transition-transform duration-200">▼</span>
+                    </div>
+                `;
+
+                const listContainer = document.createElement('div');
+                listContainer.className = 'border-t border-slate-100 divide-y divide-slate-100 bg-white/30';
+
+                filteredQuestions.forEach(q => {
+                    const isChecked = solvedQuestions.includes(q.id);
+
+                    const row = document.createElement('div');
+                    row.className = 'px-5 py-3.5 flex items-center justify-between hover:bg-white/60 transition gap-4';
+
+                    const leftDiv = document.createElement('div');
+                    leftDiv.className = 'flex items-center gap-3.5 flex-1 min-w-0';
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.checked = isChecked;
+                    checkbox.className = 'w-4 h-4 rounded accent-indigo-600 cursor-pointer shrink-0 border-slate-300';
+
+                    const titleContainer = document.createElement('div');
+                    titleContainer.className = 'flex items-center gap-2.5 min-w-0 flex-wrap';
+
+                    const titleLink = document.createElement('a');
+                    titleLink.href = q.link;
+                    titleLink.target = '_blank';
+                    titleLink.innerText = q.title;
+                    titleLink.className = `text-sm transition font-medium ${isChecked ? 'line-through text-slate-400' : 'text-slate-700 hover:text-indigo-600'}`;
+
+                    const diffBadge = document.createElement('span');
+                    diffBadge.innerText = q.difficulty;
+                    diffBadge.className = `text-[10px] px-2 py-0.5 rounded border font-semibold uppercase tracking-wider ${getDifficultyBadgeClass(q.difficulty)}`;
+
+                    checkbox.addEventListener('change', () => {
+                        if (checkbox.checked) {
+                            if (!solvedQuestions.includes(q.id)) solvedQuestions.push(q.id);
+                            titleLink.classList.add('line-through', 'text-slate-400');
+                            titleLink.classList.remove('text-slate-700', 'hover:text-indigo-600');
+                        } else {
+                            solvedQuestions = solvedQuestions.filter(id => id !== q.id);
+                            titleLink.classList.remove('line-through', 'text-slate-400');
+                            titleLink.classList.add('text-slate-700', 'hover:text-indigo-600');
+                        }
+                        localStorage.setItem('hogwarts_spatial_solved', JSON.stringify(solvedQuestions));
+                        updateStats();
+                        updateFolderBadge(folderCard, folder);
+                    });
+
+                    titleContainer.appendChild(titleLink);
+                    titleContainer.appendChild(diffBadge);
+                    leftDiv.appendChild(checkbox);
+                    leftDiv.appendChild(titleContainer);
+                    row.appendChild(leftDiv);
+
+                    const leetCodeLink = document.createElement('a');
+                    leetCodeLink.href = q.link;
+                    leetCodeLink.target = '_blank';
+                    leetCodeLink.innerHTML = 'Cast Spell ↗';
+                    leetCodeLink.className = 'text-[11px] font-semibold bg-indigo-50 hover:bg-indigo-600 hover:text-white text-indigo-700 border border-indigo-100 px-3 py-1 rounded-md transition shrink-0 shadow-sm';
+                    row.appendChild(leetCodeLink);
+
+                    listContainer.appendChild(row);
+                });
+
+                let isOpen = true;
+                headerBtn.addEventListener('click', () => {
+                    isOpen = !isOpen;
+                    listContainer.style.display = isOpen ? 'block' : 'none';
+                    headerBtn.querySelector('.transform').style.transform = isOpen ? 'rotate(0deg)' : 'rotate(-90deg)';
+                });
+
+                folderCard.appendChild(headerBtn);
+                folderCard.appendChild(listContainer);
+                container.appendChild(folderCard);
+            });
+
+            if (!hasResults) {
+                container.innerHTML = `
+                    <div class="glass-spatial text-center py-12 text-slate-500 rounded-2xl font-medium shadow-sm">
+                        Mischief Managed! No matching spells or vaults found.
+                    </div>
+                `;
+            }
+
+            updateStats();
+        }
+
+        function updateFolderBadge(folderCard, folder) {
+            const folderSolved = folder.questions.filter(q => solvedQuestions.includes(q.id)).length;
+            const badge = folderCard.querySelector('span.rounded-full');
+            if(badge) {
+                badge.innerText = `${folderSolved} / ${folder.questions.length} Mastered`;
+            }
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            renderTracker(e.target.value);
+        });
+
+        resetBtn.addEventListener('click', () => {
+            if (confirm("Are you sure you wish to cast Obliviate and clear all your memory of mastered spells?")) {
+                solvedQuestions = [];
+                localStorage.removeItem('hogwarts_spatial_solved');
+                renderTracker(searchInput.value);
+            }
+        });
+
+        renderTracker();
+    </script>
+</body>
+</html>
